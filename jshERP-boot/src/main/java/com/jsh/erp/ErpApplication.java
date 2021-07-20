@@ -14,10 +14,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import java.io.IOException;
 
 @SpringBootApplication
-@MapperScan("com.jsh.erp.datasource.mappers")
+@MapperScan({"com.jsh.erp.datasource.mappers", "com.jsh.erp.order.mapper"})
 @ServletComponentScan
 @EnableScheduling
-public class ErpApplication{
+public class ErpApplication {
     public static void main(String[] args) throws IOException {
         ConfigurableApplicationContext context = SpringApplication.run(ErpApplication.class, args);
         Environment environment = context.getBean(Environment.class);
