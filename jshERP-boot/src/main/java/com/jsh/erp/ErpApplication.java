@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import java.io.IOException;
 
 @SpringBootApplication
-@MapperScan({"com.jsh.erp.datasource.mappers", "com.jsh.erp.order.mapper"})
+@MapperScan({"com.jsh.erp.datasource.mappers"})
 @ServletComponentScan
 @EnableScheduling
 public class ErpApplication {

@@ -1,7 +1,7 @@
 package com.jsh.erp.order.service.impl;
 
 import com.jsh.erp.order.entity.WorkerOrderFlow;
-import com.jsh.erp.order.mapper.WorkerOrderFlowMapper;
+import com.jsh.erp.datasource.mappers.WorkerOrderFlowMapper;
 import com.jsh.erp.order.service.IWorkerOrderFlowService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;

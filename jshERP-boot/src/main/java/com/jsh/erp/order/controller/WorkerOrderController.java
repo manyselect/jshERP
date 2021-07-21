@@ -55,6 +55,8 @@ public class WorkerOrderController {
                                   @RequestParam String userid,
                                   HttpServletRequest request) throws Exception {
 
+
+
         Map<String, String> parameterMap = ParamUtils.requestToMap(request);
 
 
@@ -80,7 +82,6 @@ public class WorkerOrderController {
                 .last(" limit " + QueryUtils.rows(parameterMap) + offsetStr);
 
         List<WorkerOrder> list = this.workerOrderServiceImpl.list(wrapper);
-
 
         return new Result().success(list);
     }
