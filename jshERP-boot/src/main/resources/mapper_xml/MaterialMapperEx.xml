@@ -319,7 +319,7 @@
     </update>
 
     <select id="getListWithStock" resultMap="ResultMapListWithStock">
-        select m.*, me.commodity_unit unitName, mc.name categoryName, me.bar_code,
+        select m.*, any_value(me.commodity_unit) unitName, mc.name categoryName, me.bar_code,
         ifnull(me.purchase_decimal,0) purchase_decimal,
         (select ifnull(sum(mis.number),0) from jsh_material_initial_stock mis where mis.material_id = m.id
         <if test="depotId != null">

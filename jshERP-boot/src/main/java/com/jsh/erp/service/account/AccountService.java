@@ -297,6 +297,7 @@ public class AccountService {
                 for (DepotHead depotHead : dataList) {
                     if(depotHead.getChangeAmount()!=null) {
                         accountSum = accountSum .add(depotHead.getChangeAmount()) ;
+                        logger.debug("id={}, nowAccountSum={}, changeAmount={}", depotHead.getId(), accountSum, depotHead.getChangeAmount());
                     }
                 }
             }

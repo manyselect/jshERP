@@ -30,7 +30,7 @@ import static com.jsh.erp.utils.ResponseJsonUtil.returnJson;
 @RestController
 @RequestMapping(value = "/account")
 public class AccountController {
-    private Logger logger = LoggerFactory.getLogger(AccountController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Resource
     private AccountService accountService;
@@ -112,8 +112,15 @@ public class AccountController {
             if (null != dataList) {
                 for (AccountVo4InOutList aEx : dataList) {
                     String timeStr = aEx.getOperTime().toString();
-                    BigDecimal balance = accountService.getAccountSum(accountId, timeStr, "date").add(accountService.getAccountSumByHead(accountId, timeStr, "date"))
-                            .add(accountService.getAccountSumByDetail(accountId, timeStr, "date")).add(accountService.getManyAccountSum(accountId, timeStr, "date")).add(initialAmount);
+
+                    BigDecimal accountSum = accountService.getAccountSum(accountId, timeStr, "date");
+                    BigDecimal accountSumByHead = accountService.getAccountSumByHead(accountId, timeStr, "date");
+                    BigDecimal accountSumByDetail = accountService.getAccountSumByDetail(accountId, timeStr, "date");
+                    BigDecimal manyAccountSum = accountService.getManyAccountSum(accountId, timeStr, "date");
+                    logger.error("aid={}, initialAccount={}, accountSum={}, accountSumByHead={}, accountSumByDetail={}, manyAccountSum={}",
+                            aEx.getAccountId(), initialAmount, accountSum, accountSumByHead, accountSumByDetail, manyAccountSum);
+                    BigDecimal balance = accountSum.add(accountSumByHead)
+                            .add(accountSumByDetail).add(manyAccountSum).add(initialAmount);
                     aEx.setBalance(balance);
                     aEx.setAccountId(accountId);
                     dataArray.add(aEx);

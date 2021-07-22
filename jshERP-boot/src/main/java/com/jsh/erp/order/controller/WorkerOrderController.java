@@ -1,11 +1,14 @@
 package com.jsh.erp.order.controller;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jsh.erp.base.entity.Result;
+import com.jsh.erp.datasource.entities.User;
 import com.jsh.erp.order.entity.WorkerOrder;
 import com.jsh.erp.order.service.IWorkerOrderService;
+import com.jsh.erp.service.user.UserService;
 import com.jsh.erp.utils.Constants;
 import com.jsh.erp.utils.ParamUtils;
 import com.jsh.erp.utils.QueryUtils;
@@ -19,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,72 +40,82 @@ public class WorkerOrderController {
     @Autowired
     private IWorkerOrderService workerOrderServiceImpl;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/getAllOrderList")
     public Result getAllOrderList(@RequestParam(value = Constants.PAGE_SIZE, required = false) Integer pageSize,
                                   @RequestParam(value = Constants.CURRENT_PAGE, required = false) Integer currentPage,
-                                  @RequestParam String userid,
                                   HttpServletRequest request) throws Exception {
 
 
+
+
+
+
         return null;
+    }
+
+    @GetMapping("/getApprovers")
+    public Result getApprovers(HttpServletRequest request) throws Exception {
+
+        //获取当前这个人， todo:注意token和session的维护
+        User user = userService.getCurrentUser();
+
+        List<User> managers = userService.getManagers();
+
+        JSONArray resultUsers = new JSONArray();
+
+        managers.stream().forEach( m -> {
+            JSONObject o = new JSONObject();
+            o.put("name", m.getUsername());
+            resultUsers.add(o);
+        });
+
+        return new Result().success(resultUsers);
     }
 
 
     @GetMapping("/getToApprOrders")
     public Result getToApprOrders(@RequestParam(value = Constants.PAGE_SIZE, required = false) Integer pageSize,
                                   @RequestParam(value = Constants.CURRENT_PAGE, required = false) Integer currentPage,
-                                  @RequestParam String userid,
                                   HttpServletRequest request) throws Exception {
 
+        //获取当前这个人， todo:注意token和session的维护
+        User user = userService.getCurrentUser();
 
+        //查审批单
+        List<WorkerOrder> workerOrders = workerOrderServiceImpl.listApprovalOrdersByPage(user.getId(), currentPage, pageSize);
 
-        Map<String, String> parameterMap = ParamUtils.requestToMap(request);
-
-
-        if (pageSize != null && pageSize <= 0) {
-            pageSize = 10;
-        }
-        String offset = ParamUtils.getPageOffset(currentPage, pageSize);
-        if (StringUtil.isNotEmpty(offset)) {
-            parameterMap.put(Constants.OFFSET, offset);
-        }
-        if (currentPage == null || currentPage < 0) {
-            currentPage = 0;
-        }
-        parameterMap.put(Constants.CURRENT_PAGE, String.valueOf(currentPage));
-
-        parameterMap.put(Constants.PAGE_SIZE, String.valueOf(pageSize));
-
-        String offsetStr = Integer.valueOf(offset) > 0 ? ", " + QueryUtils.offset(parameterMap) : "";
-        QueryWrapper<WorkerOrder> wrapper = new QueryWrapper<WorkerOrder>().select("apply_user", "order_type",
-                "order_cc_user", "create_time", "update_time")
-                .eq("order_approval_user", userid)
-                .orderByDesc("create_time")
-                .last(" limit " + QueryUtils.rows(parameterMap) + offsetStr);
-
-        List<WorkerOrder> list = this.workerOrderServiceImpl.list(wrapper);
-
-        return new Result().success(list);
+        return new Result().success(workerOrders);
     }
 
     @GetMapping("/getCCOrders")
     public Result getCCOrders(@RequestParam(value = Constants.PAGE_SIZE, required = false) Integer pageSize,
                               @RequestParam(value = Constants.CURRENT_PAGE, required = false) Integer currentPage,
-                              @RequestParam String userid,
                               HttpServletRequest request) throws Exception {
 
+        //获取当前这个人， todo:注意token和session的维护
+        User user = userService.getCurrentUser();
 
-        return null;
+        //查审批单
+        List<WorkerOrder> workerOrders = workerOrderServiceImpl.listCCOrdersByPage(user.getId(), currentPage, pageSize);
+
+        return new Result().success(workerOrders);
     }
 
     @GetMapping("/getMyOrders")
     public Result getMyOrders(@RequestParam(value = Constants.PAGE_SIZE, required = false) Integer pageSize,
                               @RequestParam(value = Constants.CURRENT_PAGE, required = false) Integer currentPage,
-                              @RequestParam String userid,
                               HttpServletRequest request) throws Exception {
 
+        //获取当前这个人， todo:注意token和session的维护
+        User user = userService.getCurrentUser();
 
-        return null;
+        //查审批单
+        List<WorkerOrder> workerOrders = workerOrderServiceImpl.listCCOrdersByPage(user.getId(), currentPage, pageSize);
+
+        return new Result().success(workerOrders);
     }
 
     @PostMapping("/create")
